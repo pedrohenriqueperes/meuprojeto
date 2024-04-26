@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: meuprojeto
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+
+  web:
+    build: .
+    command: gunicorn meuprojeto.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8000"  # Porta alterada aqui
+    depends_on:
+      - db
+    environment:
+      DJANGO_SETTINGS_MODULE: meuprojeto.settings
+      DATABASE_URL: postgresql://user:password@db/meuprojeto
+
+volumes:
+  postgres_data:
